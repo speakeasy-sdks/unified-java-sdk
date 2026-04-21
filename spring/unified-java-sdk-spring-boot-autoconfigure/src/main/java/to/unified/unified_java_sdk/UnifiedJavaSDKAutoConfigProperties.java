@@ -6,6 +6,8 @@ package to.unified.unified_java_sdk;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.Duration;
+import static to.unified.unified_java_sdk.UnifiedTo.Builder.ServerEnvironment;
+
 import java.lang.String;
 import java.util.Collection;
 import java.util.Set;
@@ -38,9 +40,13 @@ public class UnifiedJavaSDKAutoConfigProperties {
      */
     private HttpClient httpClient = new HttpClient();
     /**
-     * The index of the server to use from the list of available servers (0-based). Defaults to the first server.
+     * The name of the server to use from the available server configurations defined in the OpenAPI specification.
      */
-    private int serverIdx = 0;
+    private String server;
+    /**
+     * Server variable configuration for parameterized server URLs defined in the OpenAPI specification.
+     */
+    private ServerVariables serverVariables = new ServerVariables();
     /**
      * Security configuration for API authentication.
      */
@@ -100,21 +106,38 @@ public class UnifiedJavaSDKAutoConfigProperties {
         this.httpClient = httpClient;
     }
     /**
-     * Gets the index of the server to use from the list of available servers (0-based).
+     * Gets the name of the server to use from the available server configurations.
      *
-     * @return the server index
+     * @return the server name
      */
-    public int getServerIdx() {
-        return serverIdx;
+    public String getServer() {
+        return server;
     }
 
     /**
-     * Sets the index of the server to use from the list of available servers (0-based).
+     * Sets the name of the server to use from the available server configurations.
      *
-     * @param serverIdx the server index to use
+     * @param server the server name to use
      */
-    public void setServerIdx(int serverIdx) {
-        this.serverIdx = serverIdx;
+    public void setServer(String server) {
+        this.server = server;
+    }
+    /**
+     * Gets the server variable configuration for parameterized server URLs.
+     *
+     * @return the server variables configuration
+     */
+    public ServerVariables getServerVariables() {
+        return serverVariables;
+    }
+
+    /**
+     * Sets the server variable configuration for parameterized server URLs.
+     *
+     * @param serverVariables the server variables configuration to use
+     */
+    public void setServerVariables(ServerVariables serverVariables) {
+        this.serverVariables = serverVariables;
     }
     /**
      * Gets the security configuration for API authentication.
@@ -425,6 +448,64 @@ public class UnifiedJavaSDKAutoConfigProperties {
     }
 
     /**
+    * Server variables configuration properties
+    */
+    public static class ServerVariables {
+        
+        /**
+         * Constructor.
+         */
+        public ServerVariables() {
+        }
+
+        /**
+         * The environment name. Defaults to the production environment.
+         */
+        private ServerEnvironment environment = ServerEnvironment.PROD;
+
+        /**
+         * Gets the environment server variable for URL substitution.
+         *
+         * @return the environment value
+         */
+        public ServerEnvironment getEnvironment() {
+            return environment;
+        }
+
+        /**
+         * Sets the environment server variable for URL substitution.
+         *
+         * @param environment the environment value to use
+         */
+        public void setEnvironment(ServerEnvironment environment) {
+            this.environment = environment;
+        }
+
+        /**
+         * The organization name. Defaults to a generic organization.
+         */
+        private String organization = "api";
+
+        /**
+         * Gets the organization server variable for URL substitution.
+         *
+         * @return the organization value
+         */
+        public String getOrganization() {
+            return organization;
+        }
+
+        /**
+         * Sets the organization server variable for URL substitution.
+         *
+         * @param organization the organization value to use
+         */
+        public void setOrganization(String organization) {
+            this.organization = organization;
+        }
+    }
+
+    /**
      * Security configuration properties
      */
     public static class Security {
@@ -435,26 +516,48 @@ public class UnifiedJavaSDKAutoConfigProperties {
         public Security() {
         }
         /**
-         * jwt for authentication.
+         * apiKey for authentication.
          */
-        private String jwt;
+        private String apiKey;
         
         /**
-         * Gets the jwt value.
+         * Gets the apiKey value.
          *
-         * @return the jwt value
+         * @return the apiKey value
          */
-        public String getJwt() {
-            return jwt;
+        public String getApiKey() {
+            return apiKey;
         }
 
         /**
-         * Sets the jwt value.
+         * Sets the apiKey value.
          *
-         * @param jwt the jwt value to use
+         * @param apiKey the apiKey value to use
          */
-        public void setJwt(String jwt) {
-            this.jwt = jwt;
+        public void setApiKey(String apiKey) {
+            this.apiKey = apiKey;
+        }
+        /**
+         * clientCredentials for authentication.
+         */
+        private String clientCredentials;
+        
+        /**
+         * Gets the clientCredentials value.
+         *
+         * @return the clientCredentials value
+         */
+        public String getClientCredentials() {
+            return clientCredentials;
+        }
+
+        /**
+         * Sets the clientCredentials value.
+         *
+         * @param clientCredentials the clientCredentials value to use
+         */
+        public void setClientCredentials(String clientCredentials) {
+            this.clientCredentials = clientCredentials;
         }
     }
 }

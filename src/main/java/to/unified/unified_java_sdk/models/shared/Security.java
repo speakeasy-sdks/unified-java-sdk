@@ -4,7 +4,7 @@
 package to.unified.unified_java_sdk.models.shared;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.lang.Override;
 import java.lang.String;
 import java.util.Optional;
@@ -15,18 +15,31 @@ import to.unified.unified_java_sdk.utils.Utils;
 
 public class Security implements HasSecurity {
 
-    @SpeakeasyMetadata("security:scheme=true,type=apiKey,subtype=header,name=authorization")
-    private String jwt;
+    @SpeakeasyMetadata("security:scheme=true,type=apiKey,subtype=header,name=Authorization")
+    private String apiKey;
+
+
+    @SpeakeasyMetadata("security:scheme=true,type=oauth2,name=Authorization")
+    private String clientCredentials;
 
     @JsonCreator
     public Security(
-            @Nonnull String jwt) {
-        this.jwt = Optional.ofNullable(jwt)
-            .orElseThrow(() -> new IllegalArgumentException("jwt cannot be null"));
+            @Nullable String apiKey,
+            @Nullable String clientCredentials) {
+        this.apiKey = apiKey;
+        this.clientCredentials = clientCredentials;
+    }
+    
+    public Security() {
+        this(null, null);
     }
 
-    public String jwt() {
-        return this.jwt;
+    public Optional<String> apiKey() {
+        return Optional.ofNullable(this.apiKey);
+    }
+
+    public Optional<String> clientCredentials() {
+        return Optional.ofNullable(this.clientCredentials);
     }
 
     public static Builder builder() {
@@ -34,8 +47,14 @@ public class Security implements HasSecurity {
     }
 
 
-    public Security withJwt(@Nonnull String jwt) {
-        this.jwt = Utils.checkNotNull(jwt, "jwt");
+    public Security withApiKey(@Nullable String apiKey) {
+        this.apiKey = apiKey;
+        return this;
+    }
+
+
+    public Security withClientCredentials(@Nullable String clientCredentials) {
+        this.clientCredentials = clientCredentials;
         return this;
     }
 
@@ -50,38 +69,47 @@ public class Security implements HasSecurity {
         }
         Security other = (Security) o;
         return 
-            Utils.enhancedDeepEquals(this.jwt, other.jwt);
+            Utils.enhancedDeepEquals(this.apiKey, other.apiKey) &&
+            Utils.enhancedDeepEquals(this.clientCredentials, other.clientCredentials);
     }
     
     @Override
     public int hashCode() {
         return Utils.enhancedHash(
-            jwt);
+            apiKey, clientCredentials);
     }
     
     @Override
     public String toString() {
         return Utils.toString(Security.class,
-                "jwt", jwt);
+                "apiKey", apiKey,
+                "clientCredentials", clientCredentials);
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public final static class Builder {
 
-        private String jwt;
+        private String apiKey;
+
+        private String clientCredentials;
 
         private Builder() {
           // force use of static builder() method
         }
 
-        public Builder jwt(@Nonnull String jwt) {
-            this.jwt = Utils.checkNotNull(jwt, "jwt");
+        public Builder apiKey(@Nullable String apiKey) {
+            this.apiKey = apiKey;
+            return this;
+        }
+
+        public Builder clientCredentials(@Nullable String clientCredentials) {
+            this.clientCredentials = clientCredentials;
             return this;
         }
 
         public Security build() {
             return new Security(
-                jwt);
+                apiKey, clientCredentials);
         }
 
     }

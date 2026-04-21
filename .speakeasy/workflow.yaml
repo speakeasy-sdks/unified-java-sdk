@@ -10,3 +10,9 @@ targets:
     java-target:
         target: java
         source: debug
+        codeSamples:
+            registry:
+                location: registry.speakeasyapi.dev/speakeasy-team/speakeasy-team/debug-java-code-samples
+            labelOverride:
+                fixedValue: Java (SDK)
+            blocking: false

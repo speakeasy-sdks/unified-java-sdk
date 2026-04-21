@@ -1,20 +1,20 @@
 # Status
 
+The status of the order.
+
 ## Example Usage
 
 ```java
 import to.unified.unified_java_sdk.models.shared.Status;
 
-Status value = Status.ACTIVE;
-
-// Open enum: use .of() to create instances from custom string values
-Status custom = Status.of("custom_value");
+Status value = Status.PENDING;
 ```
 
 
 ## Values
 
-| Name       | Value      |
-| ---------- | ---------- |
-| `ACTIVE`   | ACTIVE     |
-| `ARCHIVED` | ARCHIVED   |
+| Name         | Value        |
+| ------------ | ------------ |
+| `PENDING`    | pending      |
+| `PROCESSING` | processing   |
+| `COMPLETE`   | complete     |

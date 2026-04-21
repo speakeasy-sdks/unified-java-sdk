@@ -4,1120 +4,142 @@
 
 package to.unified.unified_java_sdk;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.lang.String;
+import java.lang.SuppressWarnings;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import to.unified.unified_java_sdk.utils.HTTPClient;
 import to.unified.unified_java_sdk.utils.Headers;
+import to.unified.unified_java_sdk.utils.Hook.SdkInitData;
 import to.unified.unified_java_sdk.utils.RetryConfig;
 import to.unified.unified_java_sdk.utils.SpeakeasyHTTPClient;
 import to.unified.unified_java_sdk.utils.Utils;
 
 /**
- * Unified.to  API: One API to Rule Them All
+ * The Speakeasy Bar: A bar that serves drinks.
  * 
- * <p><a href="https://docs.unified.to">API Documentation</a>
+ * <p>A secret underground bar that serves drinks to those in the know.
+ * 
+ * <p><a href="https://docs.speakeasy.bar">The Speakeasy Bar Documentation.</a>
  */
 public class UnifiedTo {
     private static final Headers _headers = Headers.EMPTY;
 
+    /**
+     * AvailableServers contains identifiers for the servers available to the SDK.
+     */
+    public enum AvailableServers {
+        /**
+         * PROD
+         * 
+         * <p>The production server.
+         */
+        PROD("prod"),
+        /**
+         * STAGING
+         * 
+         * <p>The staging server.
+         */
+        STAGING("staging"),
+        /**
+         * CUSTOMER
+         * 
+         * <p>A per-organization and per-environment API.
+         */
+        CUSTOMER("customer");
+
+        private final String server;
+
+        AvailableServers(String server) {
+            this.server = server;
+        }
+
+        public String server() {
+           return server;
+        }
+    }
 
     /**
      * SERVERS contains the list of server urls available to the SDK.
      */
-    public static final String[] SERVERS = {
-        /*
-         * North American data region
-         */
-        "https://api.unified.to",
-        /*
-         * European data region
-         */
-        "https://api-eu.unified.to",
-        /*
-         * Australian data region
-         */
-        "https://api-au.unified.to",
-    };
+    @SuppressWarnings("serial")
+    public static final Map<AvailableServers, String> SERVERS = new HashMap<>() { {
+        put(AvailableServers.PROD, "https://speakeasy.bar");
+        put(AvailableServers.STAGING, "https://staging.speakeasy.bar");
+        put(AvailableServers.CUSTOMER, "https://{organization}.{environment}.speakeasy.bar");
+    }};
 
+    /**
+     * The authentication endpoints.
+     */
+    private final Authentication authentication;
 
-    private final Accounting accounting;
+    /**
+     * The drinks endpoints.
+     */
+    private final Drinks drinks;
 
+    /**
+     * The food endpoints.
+     */
+    private final Food food;
 
-    private final Account account;
+    /**
+     * The ingredients endpoints.
+     */
+    private final Ingredients ingredients;
 
+    /**
+     * The orders endpoints.
+     */
+    private final Orders orders;
 
-    private final Balancesheet balancesheet;
 
+    private final Config config;
 
-    private final Bill bill;
-
-
-    private final Cashflow cashflow;
-
-
-    private final Category category;
-
-
-    private final Contact contact;
-
-
-    private final Creditmemo creditmemo;
-
-
-    private final Expense expense;
-
-
-    private final Invoice invoice;
-
-
-    private final Journal journal;
-
-
-    private final Order order;
-
-
-    private final Organization organization;
-
-
-    private final Profitloss profitloss;
-
-
-    private final Purchaseorder purchaseorder;
-
-
-    private final Report report;
-
-
-    private final Salesorder salesorder;
-
-
-    private final Taxrate taxrate;
-
-
-    private final Transaction transaction;
-
-
-    private final Trialbalance trialbalance;
-
-
-    private final Ads ads;
-
-
-    private final Ad ad;
-
-
-    private final Campaign campaign;
-
-
-    private final Creative creative;
-
-
-    private final Group group;
-
-
-    private final Insertionorder insertionorder;
-
-
-    private final Promoted promoted;
-
-
-    private final Target target;
-
-
-    private final Assessment assessment;
-
-
-    private final Package package_;
-
-
-    private final Ats ats;
-
-
-    private final Activity activity;
-
-
-    private final Application application;
-
-
-    private final Applicationstatus applicationstatus;
-
-
-    private final Candidate candidate;
-
-
-    private final Company company;
-
-
-    private final Document document;
-
-
-    private final Interview interview;
-
-
-    private final Job job;
-
-
-    private final Scorecard scorecard;
-
-
-    private final Calendar calendar;
-
-
-    private final Busy busy;
-
-
-    private final Event event;
-
-
-    private final Link link;
-
-
-    private final Recording recording;
-
-
-    private final Webinar webinar;
-
-
-    private final Commerce commerce;
-
-
-    private final Availability availability;
-
-
-    private final Collection collection;
-
-
-    private final Inventory inventory;
-
-
-    private final Item item;
-
-
-    private final Itemvariant itemvariant;
-
-
-    private final Location location;
-
-
-    private final Reservation reservation;
-
-
-    private final Review review;
-
-
-    private final Saleschannel saleschannel;
-
-
-    private final Crm crm;
-
-
-    private final Deal deal;
-
-
-    private final Lead lead;
-
-
-    private final Pipeline pipeline;
-
-
-    private final Enrich enrich;
-
-
-    private final Person person;
-
-
-    private final Forms forms;
-
-
-    private final Form form;
-
-
-    private final Submission submission;
-
-
-    private final Genai genai;
-
-
-    private final Embedding embedding;
-
-
-    private final Model model;
-
-
-    private final Prompt prompt;
-
-
-    private final Hris hris;
-
-
-    private final Bankaccount bankaccount;
-
-
-    private final Benefit benefit;
-
-
-    private final Deduction deduction;
-
-
-    private final Device device;
-
-
-    private final Employee employee;
-
-
-    private final Payslip payslip;
-
-
-    private final Timeoff timeoff;
-
-
-    private final Timeshift timeshift;
-
-
-    private final Kms kms;
-
-
-    private final Comment comment;
-
-
-    private final Page page;
-
-
-    private final Space space;
-
-
-    private final Lms lms;
-
-
-    private final Class class_;
-
-
-    private final Content content;
-
-
-    private final Course course;
-
-
-    private final Instructor instructor;
-
-
-    private final Student student;
-
-
-    private final Martech martech;
-
-
-    private final List list;
-
-
-    private final Member member;
-
-
-    private final Messaging messaging;
-
-
-    private final Channel channel;
-
-
-    private final Message message;
-
-
-    private final Metadata metadata;
-
-
-    private final Passthrough passthrough;
-
-
-    private final Payment payment;
-
-
-    private final Payout payout;
-
-
-    private final Refund refund;
-
-
-    private final Subscription subscription;
-
-
-    private final Repo repo;
-
-
-    private final Branch branch;
-
-
-    private final Commit commit;
-
-
-    private final Pullrequest pullrequest;
-
-
-    private final Repository repository;
-
-
-    private final Scim scim;
-
-
-    private final User user;
-
-
-    private final Shipping shipping;
-
-
-    private final Carrier carrier;
-
-
-    private final Label label;
-
-
-    private final Rate rate;
-
-
-    private final Shipment shipment;
-
-
-    private final Tracking tracking;
-
-
-    private final Storage storage;
-
-
-    private final File file;
-
-
-    private final Task task;
-
-
-    private final Change change;
-
-
-    private final Project project;
-
-
-    private final Ticketing ticketing;
-
-
-    private final Customer customer;
-
-
-    private final Note note;
-
-
-    private final Ticket ticket;
-
-
-    private final Uc uc;
-
-
-    private final Call call;
-
-
-    private final Unified unified;
-
-
-    private final Apicall apicall;
-
-
-    private final Connection connection;
-
-
-    private final Environment environment;
-
-
-    private final Integration integration;
-
-
-    private final Auth auth;
-
-
-    private final Login login;
-
-
-    private final Issue issue;
-
-
-    private final Webhook webhook;
-
-
-    private final Verification verification;
-
-
-    private final Request request;
-
-
-    public Accounting accounting() {
-        return accounting;
-    }
-
-
-    public Account account() {
-        return account;
-    }
-
-
-    public Balancesheet balancesheet() {
-        return balancesheet;
-    }
-
-
-    public Bill bill() {
-        return bill;
-    }
-
-
-    public Cashflow cashflow() {
-        return cashflow;
-    }
-
-
-    public Category category() {
-        return category;
-    }
-
-
-    public Contact contact() {
-        return contact;
-    }
-
-
-    public Creditmemo creditmemo() {
-        return creditmemo;
-    }
-
-
-    public Expense expense() {
-        return expense;
-    }
-
-
-    public Invoice invoice() {
-        return invoice;
-    }
-
-
-    public Journal journal() {
-        return journal;
-    }
-
-
-    public Order order() {
-        return order;
-    }
-
-
-    public Organization organization() {
-        return organization;
-    }
-
-
-    public Profitloss profitloss() {
-        return profitloss;
-    }
-
-
-    public Purchaseorder purchaseorder() {
-        return purchaseorder;
-    }
-
-
-    public Report report() {
-        return report;
-    }
-
-
-    public Salesorder salesorder() {
-        return salesorder;
-    }
-
-
-    public Taxrate taxrate() {
-        return taxrate;
-    }
-
-
-    public Transaction transaction() {
-        return transaction;
-    }
-
-
-    public Trialbalance trialbalance() {
-        return trialbalance;
-    }
-
-
-    public Ads ads() {
-        return ads;
-    }
-
-
-    public Ad ad() {
-        return ad;
-    }
-
-
-    public Campaign campaign() {
-        return campaign;
-    }
-
-
-    public Creative creative() {
-        return creative;
-    }
-
-
-    public Group group() {
-        return group;
-    }
-
-
-    public Insertionorder insertionorder() {
-        return insertionorder;
-    }
-
-
-    public Promoted promoted() {
-        return promoted;
-    }
-
-
-    public Target target() {
-        return target;
-    }
-
-
-    public Assessment assessment() {
-        return assessment;
-    }
-
-
-    public Package package_() {
-        return package_;
-    }
-
-
-    public Ats ats() {
-        return ats;
-    }
-
-
-    public Activity activity() {
-        return activity;
-    }
-
-
-    public Application application() {
-        return application;
-    }
-
-
-    public Applicationstatus applicationstatus() {
-        return applicationstatus;
-    }
-
-
-    public Candidate candidate() {
-        return candidate;
-    }
-
-
-    public Company company() {
-        return company;
-    }
-
-
-    public Document document() {
-        return document;
-    }
-
-
-    public Interview interview() {
-        return interview;
-    }
-
-
-    public Job job() {
-        return job;
-    }
-
-
-    public Scorecard scorecard() {
-        return scorecard;
-    }
-
-
-    public Calendar calendar() {
-        return calendar;
-    }
-
-
-    public Busy busy() {
-        return busy;
-    }
-
-
-    public Event event() {
-        return event;
-    }
-
-
-    public Link link() {
-        return link;
-    }
-
-
-    public Recording recording() {
-        return recording;
-    }
-
-
-    public Webinar webinar() {
-        return webinar;
-    }
-
-
-    public Commerce commerce() {
-        return commerce;
-    }
-
-
-    public Availability availability() {
-        return availability;
-    }
-
-
-    public Collection collection() {
-        return collection;
-    }
-
-
-    public Inventory inventory() {
-        return inventory;
-    }
-
-
-    public Item item() {
-        return item;
-    }
-
-
-    public Itemvariant itemvariant() {
-        return itemvariant;
-    }
-
-
-    public Location location() {
-        return location;
-    }
-
-
-    public Reservation reservation() {
-        return reservation;
-    }
-
-
-    public Review review() {
-        return review;
-    }
-
-
-    public Saleschannel saleschannel() {
-        return saleschannel;
-    }
-
-
-    public Crm crm() {
-        return crm;
-    }
-
-
-    public Deal deal() {
-        return deal;
-    }
-
-
-    public Lead lead() {
-        return lead;
-    }
-
-
-    public Pipeline pipeline() {
-        return pipeline;
-    }
-
-
-    public Enrich enrich() {
-        return enrich;
-    }
-
-
-    public Person person() {
-        return person;
-    }
-
-
-    public Forms forms() {
-        return forms;
-    }
-
-
-    public Form form() {
-        return form;
-    }
-
-
-    public Submission submission() {
-        return submission;
-    }
-
-
-    public Genai genai() {
-        return genai;
-    }
-
-
-    public Embedding embedding() {
-        return embedding;
-    }
-
-
-    public Model model() {
-        return model;
-    }
-
-
-    public Prompt prompt() {
-        return prompt;
-    }
-
-
-    public Hris hris() {
-        return hris;
-    }
-
-
-    public Bankaccount bankaccount() {
-        return bankaccount;
-    }
-
-
-    public Benefit benefit() {
-        return benefit;
-    }
-
-
-    public Deduction deduction() {
-        return deduction;
-    }
-
-
-    public Device device() {
-        return device;
-    }
-
-
-    public Employee employee() {
-        return employee;
-    }
-
-
-    public Payslip payslip() {
-        return payslip;
-    }
-
-
-    public Timeoff timeoff() {
-        return timeoff;
-    }
-
-
-    public Timeshift timeshift() {
-        return timeshift;
-    }
-
-
-    public Kms kms() {
-        return kms;
-    }
-
-
-    public Comment comment() {
-        return comment;
-    }
-
-
-    public Page page() {
-        return page;
-    }
-
-
-    public Space space() {
-        return space;
-    }
-
-
-    public Lms lms() {
-        return lms;
-    }
-
-
-    public Class class_() {
-        return class_;
-    }
-
-
-    public Content content() {
-        return content;
-    }
-
-
-    public Course course() {
-        return course;
-    }
-
-
-    public Instructor instructor() {
-        return instructor;
-    }
-
-
-    public Student student() {
-        return student;
-    }
-
-
-    public Martech martech() {
-        return martech;
-    }
-
-
-    public List list() {
-        return list;
-    }
-
-
-    public Member member() {
-        return member;
-    }
-
-
-    public Messaging messaging() {
-        return messaging;
-    }
-
-
-    public Channel channel() {
-        return channel;
-    }
-
-
-    public Message message() {
-        return message;
-    }
-
-
-    public Metadata metadata() {
-        return metadata;
-    }
-
-
-    public Passthrough passthrough() {
-        return passthrough;
-    }
-
-
-    public Payment payment() {
-        return payment;
-    }
-
-
-    public Payout payout() {
-        return payout;
-    }
-
-
-    public Refund refund() {
-        return refund;
-    }
-
-
-    public Subscription subscription() {
-        return subscription;
-    }
-
-
-    public Repo repo() {
-        return repo;
-    }
-
-
-    public Branch branch() {
-        return branch;
-    }
-
-
-    public Commit commit() {
-        return commit;
-    }
-
-
-    public Pullrequest pullrequest() {
-        return pullrequest;
-    }
-
-
-    public Repository repository() {
-        return repository;
-    }
-
-
-    public Scim scim() {
-        return scim;
-    }
-
-
-    public User user() {
-        return user;
-    }
-
-
-    public Shipping shipping() {
-        return shipping;
-    }
-
-
-    public Carrier carrier() {
-        return carrier;
-    }
-
-
-    public Label label() {
-        return label;
-    }
-
-
-    public Rate rate() {
-        return rate;
-    }
-
-
-    public Shipment shipment() {
-        return shipment;
-    }
-
-
-    public Tracking tracking() {
-        return tracking;
-    }
-
-
-    public Storage storage() {
-        return storage;
-    }
-
-
-    public File file() {
-        return file;
-    }
-
-
-    public Task task() {
-        return task;
-    }
-
-
-    public Change change() {
-        return change;
-    }
-
-
-    public Project project() {
-        return project;
-    }
-
-
-    public Ticketing ticketing() {
-        return ticketing;
-    }
-
-
-    public Customer customer() {
-        return customer;
-    }
-
-
-    public Note note() {
-        return note;
-    }
-
-
-    public Ticket ticket() {
-        return ticket;
-    }
-
-
-    public Uc uc() {
-        return uc;
-    }
-
-
-    public Call call() {
-        return call;
-    }
-
-
-    public Unified unified() {
-        return unified;
-    }
-
-
-    public Apicall apicall() {
-        return apicall;
-    }
-
-
-    public Connection connection() {
-        return connection;
-    }
-
-
-    public Environment environment() {
-        return environment;
-    }
-
-
-    public Integration integration() {
-        return integration;
-    }
-
-
-    public Auth auth() {
-        return auth;
+    /**
+     * The authentication endpoints.
+     */
+    public Authentication authentication() {
+        return authentication;
     }
-
 
-    public Login login() {
-        return login;
+    /**
+     * The drinks endpoints.
+     */
+    public Drinks drinks() {
+        return drinks;
     }
 
-
-    public Issue issue() {
-        return issue;
+    /**
+     * The food endpoints.
+     */
+    public Food food() {
+        return food;
     }
 
-
-    public Webhook webhook() {
-        return webhook;
+    /**
+     * The ingredients endpoints.
+     */
+    public Ingredients ingredients() {
+        return ingredients;
     }
-
 
-    public Verification verification() {
-        return verification;
+    /**
+     * The orders endpoints.
+     */
+    public Orders orders() {
+        return orders;
     }
 
 
-    public Request request() {
-        return request;
+    public Config config() {
+        return config;
     }
     private final AsyncUnifiedTo asyncSDK;
 
@@ -1192,14 +214,14 @@ public class UnifiedTo {
         }
         
         /**
-         * Overrides the default server by index.
+         * Overrides the default server by name.
          *
-         * @param serverIdx The server to use for all requests.
+         * @param server The server to use for all requests.
          * @return The builder instance.
          */
-        public Builder serverIndex(int serverIdx) {
-            this.sdkConfiguration.setServerIdx(serverIdx);
-            this.serverUrl= SERVERS[serverIdx];
+        public Builder server(AvailableServers server) {
+            this.server = server.server();
+            this.serverUrl = SERVERS.get(server);
             return this;
         }
         
@@ -1230,6 +252,83 @@ public class UnifiedTo {
             return this;
         }
 
+        /**
+         * ServerEnvironment
+         * 
+         * <p>The environment name. Defaults to the production environment.
+         */
+        public enum ServerEnvironment {
+            PROD("prod"),
+            STAGING("staging"),
+            DEV("dev");
+
+            @JsonValue    
+            private final String value;
+
+            ServerEnvironment(String value) {
+                this.value = value;
+            }
+
+            public String value() {
+                return value;
+            }
+
+            public static Optional<ServerEnvironment> fromValue(String value) {
+                for (ServerEnvironment o: ServerEnvironment.values()) {
+                    if (Objects.deepEquals(o.value, value)) {
+                        return Optional.of(o);
+                    }
+                }
+                return Optional.empty();
+            }
+        }
+        /**
+         * Sets the environment variable for url substitution.
+         *
+         * @param environment The value to set.
+         * @return The builder instance.
+         */
+        public Builder environment(ServerEnvironment environment) {
+            for (Entry<String, Map<String, String>> entry : this.sdkConfiguration.serverVariables().entrySet()) {
+                Map<String, String> server = entry.getValue();
+
+                if (!server.containsKey("environment")) {
+                    continue;
+                }
+                server.put("environment", environment.toString());
+            }
+
+            return this;
+        }
+        /**
+         * Sets the organization variable for url substitution.
+         *
+         * @param organization The value to set.
+         * @return The builder instance.
+         */
+        public Builder organization(String organization) {
+            for (Entry<String, Map<String, String>> entry : this.sdkConfiguration.serverVariables().entrySet()) {
+                Map<String, String> server = entry.getValue();
+
+                if (!server.containsKey("organization")) {
+                    continue;
+                }
+                server.put("organization", organization);
+            }
+
+            return this;
+        }
+        // Visible for testing, may be accessed via reflection in tests
+        Builder _hooks(to.unified.unified_java_sdk.utils.Hooks hooks) {
+            sdkConfiguration.setHooks(hooks);  
+            return this;  
+        }
+        
+        // Visible for testing, may be accessed via reflection in tests
+        Builder _hooks(Consumer<? super to.unified.unified_java_sdk.utils.Hooks> consumer) {
+            consumer.accept(sdkConfiguration.hooks());
+            return this;    
+        }
 
         /**
          * Builds a new instance of the SDK.
@@ -1238,10 +337,13 @@ public class UnifiedTo {
          */
         public UnifiedTo build() {
             if (serverUrl == null || serverUrl.isBlank()) {
-                serverUrl = SERVERS[0];
-                sdkConfiguration.setServerIdx(0);
+                serverUrl = SERVERS.get(AvailableServers.PROD);
+                server = AvailableServers.PROD.server();
             }
             sdkConfiguration.setServerUrl(serverUrl);
+            if (server != null) {
+                sdkConfiguration.setServer(server);
+            }
             return new UnifiedTo(sdkConfiguration);
         }
     }
@@ -1257,141 +359,18 @@ public class UnifiedTo {
 
     public UnifiedTo(SDKConfiguration sdkConfiguration) {
         sdkConfiguration.initialize();
-        this.accounting = new Accounting(sdkConfiguration);
-        this.account = new Account(sdkConfiguration);
-        this.balancesheet = new Balancesheet(sdkConfiguration);
-        this.bill = new Bill(sdkConfiguration);
-        this.cashflow = new Cashflow(sdkConfiguration);
-        this.category = new Category(sdkConfiguration);
-        this.contact = new Contact(sdkConfiguration);
-        this.creditmemo = new Creditmemo(sdkConfiguration);
-        this.expense = new Expense(sdkConfiguration);
-        this.invoice = new Invoice(sdkConfiguration);
-        this.journal = new Journal(sdkConfiguration);
-        this.order = new Order(sdkConfiguration);
-        this.organization = new Organization(sdkConfiguration);
-        this.profitloss = new Profitloss(sdkConfiguration);
-        this.purchaseorder = new Purchaseorder(sdkConfiguration);
-        this.report = new Report(sdkConfiguration);
-        this.salesorder = new Salesorder(sdkConfiguration);
-        this.taxrate = new Taxrate(sdkConfiguration);
-        this.transaction = new Transaction(sdkConfiguration);
-        this.trialbalance = new Trialbalance(sdkConfiguration);
-        this.ads = new Ads(sdkConfiguration);
-        this.ad = new Ad(sdkConfiguration);
-        this.campaign = new Campaign(sdkConfiguration);
-        this.creative = new Creative(sdkConfiguration);
-        this.group = new Group(sdkConfiguration);
-        this.insertionorder = new Insertionorder(sdkConfiguration);
-        this.promoted = new Promoted(sdkConfiguration);
-        this.target = new Target(sdkConfiguration);
-        this.assessment = new Assessment(sdkConfiguration);
-        this.package_ = new Package(sdkConfiguration);
-        this.ats = new Ats(sdkConfiguration);
-        this.activity = new Activity(sdkConfiguration);
-        this.application = new Application(sdkConfiguration);
-        this.applicationstatus = new Applicationstatus(sdkConfiguration);
-        this.candidate = new Candidate(sdkConfiguration);
-        this.company = new Company(sdkConfiguration);
-        this.document = new Document(sdkConfiguration);
-        this.interview = new Interview(sdkConfiguration);
-        this.job = new Job(sdkConfiguration);
-        this.scorecard = new Scorecard(sdkConfiguration);
-        this.calendar = new Calendar(sdkConfiguration);
-        this.busy = new Busy(sdkConfiguration);
-        this.event = new Event(sdkConfiguration);
-        this.link = new Link(sdkConfiguration);
-        this.recording = new Recording(sdkConfiguration);
-        this.webinar = new Webinar(sdkConfiguration);
-        this.commerce = new Commerce(sdkConfiguration);
-        this.availability = new Availability(sdkConfiguration);
-        this.collection = new Collection(sdkConfiguration);
-        this.inventory = new Inventory(sdkConfiguration);
-        this.item = new Item(sdkConfiguration);
-        this.itemvariant = new Itemvariant(sdkConfiguration);
-        this.location = new Location(sdkConfiguration);
-        this.reservation = new Reservation(sdkConfiguration);
-        this.review = new Review(sdkConfiguration);
-        this.saleschannel = new Saleschannel(sdkConfiguration);
-        this.crm = new Crm(sdkConfiguration);
-        this.deal = new Deal(sdkConfiguration);
-        this.lead = new Lead(sdkConfiguration);
-        this.pipeline = new Pipeline(sdkConfiguration);
-        this.enrich = new Enrich(sdkConfiguration);
-        this.person = new Person(sdkConfiguration);
-        this.forms = new Forms(sdkConfiguration);
-        this.form = new Form(sdkConfiguration);
-        this.submission = new Submission(sdkConfiguration);
-        this.genai = new Genai(sdkConfiguration);
-        this.embedding = new Embedding(sdkConfiguration);
-        this.model = new Model(sdkConfiguration);
-        this.prompt = new Prompt(sdkConfiguration);
-        this.hris = new Hris(sdkConfiguration);
-        this.bankaccount = new Bankaccount(sdkConfiguration);
-        this.benefit = new Benefit(sdkConfiguration);
-        this.deduction = new Deduction(sdkConfiguration);
-        this.device = new Device(sdkConfiguration);
-        this.employee = new Employee(sdkConfiguration);
-        this.payslip = new Payslip(sdkConfiguration);
-        this.timeoff = new Timeoff(sdkConfiguration);
-        this.timeshift = new Timeshift(sdkConfiguration);
-        this.kms = new Kms(sdkConfiguration);
-        this.comment = new Comment(sdkConfiguration);
-        this.page = new Page(sdkConfiguration);
-        this.space = new Space(sdkConfiguration);
-        this.lms = new Lms(sdkConfiguration);
-        this.class_ = new Class(sdkConfiguration);
-        this.content = new Content(sdkConfiguration);
-        this.course = new Course(sdkConfiguration);
-        this.instructor = new Instructor(sdkConfiguration);
-        this.student = new Student(sdkConfiguration);
-        this.martech = new Martech(sdkConfiguration);
-        this.list = new List(sdkConfiguration);
-        this.member = new Member(sdkConfiguration);
-        this.messaging = new Messaging(sdkConfiguration);
-        this.channel = new Channel(sdkConfiguration);
-        this.message = new Message(sdkConfiguration);
-        this.metadata = new Metadata(sdkConfiguration);
-        this.passthrough = new Passthrough(sdkConfiguration);
-        this.payment = new Payment(sdkConfiguration);
-        this.payout = new Payout(sdkConfiguration);
-        this.refund = new Refund(sdkConfiguration);
-        this.subscription = new Subscription(sdkConfiguration);
-        this.repo = new Repo(sdkConfiguration);
-        this.branch = new Branch(sdkConfiguration);
-        this.commit = new Commit(sdkConfiguration);
-        this.pullrequest = new Pullrequest(sdkConfiguration);
-        this.repository = new Repository(sdkConfiguration);
-        this.scim = new Scim(sdkConfiguration);
-        this.user = new User(sdkConfiguration);
-        this.shipping = new Shipping(sdkConfiguration);
-        this.carrier = new Carrier(sdkConfiguration);
-        this.label = new Label(sdkConfiguration);
-        this.rate = new Rate(sdkConfiguration);
-        this.shipment = new Shipment(sdkConfiguration);
-        this.tracking = new Tracking(sdkConfiguration);
-        this.storage = new Storage(sdkConfiguration);
-        this.file = new File(sdkConfiguration);
-        this.task = new Task(sdkConfiguration);
-        this.change = new Change(sdkConfiguration);
-        this.project = new Project(sdkConfiguration);
-        this.ticketing = new Ticketing(sdkConfiguration);
-        this.customer = new Customer(sdkConfiguration);
-        this.note = new Note(sdkConfiguration);
-        this.ticket = new Ticket(sdkConfiguration);
-        this.uc = new Uc(sdkConfiguration);
-        this.call = new Call(sdkConfiguration);
-        this.unified = new Unified(sdkConfiguration);
-        this.apicall = new Apicall(sdkConfiguration);
-        this.connection = new Connection(sdkConfiguration);
-        this.environment = new Environment(sdkConfiguration);
-        this.integration = new Integration(sdkConfiguration);
-        this.auth = new Auth(sdkConfiguration);
-        this.login = new Login(sdkConfiguration);
-        this.issue = new Issue(sdkConfiguration);
-        this.webhook = new Webhook(sdkConfiguration);
-        this.verification = new Verification(sdkConfiguration);
-        this.request = new Request(sdkConfiguration);
+        this.authentication = new Authentication(sdkConfiguration);
+        this.drinks = new Drinks(sdkConfiguration);
+        this.food = new Food(sdkConfiguration);
+        this.ingredients = new Ingredients(sdkConfiguration);
+        this.orders = new Orders(sdkConfiguration);
+        this.config = new Config(sdkConfiguration);
+        SdkInitData data = sdkConfiguration.hooks().sdkInit(
+                new SdkInitData(
+                        sdkConfiguration.resolvedServerUrl(), 
+                        sdkConfiguration.client()));
+        sdkConfiguration.setServerUrl(data.baseUrl());
+        sdkConfiguration.setClient(data.client());
         this.asyncSDK = new AsyncUnifiedTo(this, sdkConfiguration);
     }
 

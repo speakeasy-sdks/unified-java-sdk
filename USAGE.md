@@ -4,33 +4,61 @@ package hello.world;
 
 import java.lang.Exception;
 import to.unified.unified_java_sdk.UnifiedTo;
-import to.unified.unified_java_sdk.models.operations.CreateAccountingAccountRequest;
-import to.unified.unified_java_sdk.models.operations.CreateAccountingAccountResponse;
-import to.unified.unified_java_sdk.models.shared.AccountingAccount;
+import to.unified.unified_java_sdk.models.errors.APIError;
+import to.unified.unified_java_sdk.models.operations.ListDrinksResponse;
 import to.unified.unified_java_sdk.models.shared.Security;
 
 public class Application {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws APIError, Exception {
 
         UnifiedTo sdk = UnifiedTo.builder()
                 .security(Security.builder()
-                    .jwt(System.getenv().getOrDefault("JWT", ""))
+                    .clientCredentials(System.getenv().getOrDefault("CLIENT_CREDENTIALS", ""))
                     .build())
             .build();
 
-        CreateAccountingAccountRequest req = CreateAccountingAccountRequest.builder()
-                .accountingAccount(AccountingAccount.builder()
+        ListDrinksResponse res = sdk.drinks().listDrinks()
+                .call();
+
+        if (res.drinks().isPresent()) {
+            System.out.println(res.drinks().get());
+        }
+    }
+}
+```
+
+```java
+package hello.world;
+
+import java.lang.Exception;
+import java.util.List;
+import to.unified.unified_java_sdk.UnifiedTo;
+import to.unified.unified_java_sdk.models.errors.APIError;
+import to.unified.unified_java_sdk.models.operations.CreateOrderRequest;
+import to.unified.unified_java_sdk.models.operations.CreateOrderResponse;
+import to.unified.unified_java_sdk.models.shared.Security;
+
+public class Application {
+
+    public static void main(String[] args) throws APIError, Exception {
+
+        UnifiedTo sdk = UnifiedTo.builder()
+                .security(Security.builder()
+                    .apiKey(System.getenv().getOrDefault("API_KEY", ""))
                     .build())
-                .connectionId("<id>")
+            .build();
+
+        CreateOrderRequest req = CreateOrderRequest.builder()
+                .requestBody(List.of())
                 .build();
 
-        CreateAccountingAccountResponse res = sdk.accounting().createAccountingAccount()
+        CreateOrderResponse res = sdk.orders().createOrder()
                 .request(req)
                 .call();
 
-        if (res.accountingAccount().isPresent()) {
-            System.out.println(res.accountingAccount().get());
+        if (res.order().isPresent()) {
+            System.out.println(res.order().get());
         }
     }
 }

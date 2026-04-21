@@ -3,125 +3,39 @@
  */
 package to.unified.unified_java_sdk.models.shared;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import java.lang.Override;
 import java.lang.String;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Wrapper for an "open" enum that can handle unknown values from API responses
- * without runtime errors. Instances are immutable singletons with reference equality.
- * Use {@code asEnum()} for switch expressions.
+ * Status
+ * 
+ * <p>The status of the order.
  */
-public class Status {
-
-    public static final Status ACTIVE = new Status("ACTIVE");
-    public static final Status ARCHIVED = new Status("ARCHIVED");
-
-    // This map will grow whenever a Color gets created with a new
-    // unrecognized value (a potential memory leak if the user is not
-    // careful). Keep this field lower case to avoid clashing with
-    // generated member names which will always be upper cased (Java
-    // convention)
-    private static final Map<String, Status> values = createValuesMap();
-    private static final Map<String, StatusEnum> enums = createEnumsMap();
-
-    private final String value;
-
-    private Status(String value) {
-        this.value = value;
-    }
-
-    /**
-     * Returns a Status with the given value. For a specific value the 
-     * returned object will always be a singleton so reference equality 
-     * is satisfied when the values are the same.
-     * 
-     * @param value value to be wrapped as Status
-     */ 
-    @JsonCreator
-    public static Status of(String value) {
-        synchronized (Status.class) {
-            return values.computeIfAbsent(value, v -> new Status(v));
-        }
-    }
+public enum Status {
+    PENDING("pending"),
+    PROCESSING("processing"),
+    COMPLETE("complete");
 
     @JsonValue
+    private final String value;
+
+    Status(String value) {
+        this.value = value;
+    }
+    
     public String value() {
         return value;
     }
-
-    public Optional<StatusEnum> asEnum() {
-        return Optional.ofNullable(enums.getOrDefault(value, null));
-    }
-
-    public boolean isKnown() {
-        return asEnum().isPresent();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
-
-    @Override
-    public boolean equals(java.lang.Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Status other = (Status) obj;
-        return Objects.equals(value, other.value);
-    }
-
-    @Override
-    public String toString() {
-        return "Status [value=" + value + "]";
-    }
-
-    // return an array just like an enum
-    public static Status[] values() {
-        synchronized (Status.class) {
-            return values.values().toArray(new Status[] {});
-        }
-    }
-
-    private static final Map<String, Status> createValuesMap() {
-        Map<String, Status> map = new LinkedHashMap<>();
-        map.put("ACTIVE", ACTIVE);
-        map.put("ARCHIVED", ARCHIVED);
-        return map;
-    }
-
-    private static final Map<String, StatusEnum> createEnumsMap() {
-        Map<String, StatusEnum> map = new HashMap<>();
-        map.put("ACTIVE", StatusEnum.ACTIVE);
-        map.put("ARCHIVED", StatusEnum.ARCHIVED);
-        return map;
-    }
     
-    
-    public enum StatusEnum {
-
-        ACTIVE("ACTIVE"),
-        ARCHIVED("ARCHIVED"),;
-
-        private final String value;
-
-        private StatusEnum(String value) {
-            this.value = value;
+    public static Optional<Status> fromValue(String value) {
+        for (Status o: Status.values()) {
+            if (Objects.deepEquals(o.value, value)) {
+                return Optional.of(o);
+            }
         }
-
-        public String value() {
-            return value;
-        }
+        return Optional.empty();
     }
 }
 

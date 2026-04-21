@@ -1,2 +1,0 @@
-# IntegrationSchemasSaml5
-
