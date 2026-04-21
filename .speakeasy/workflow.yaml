@@ -1,22 +1,12 @@
 workflowVersion: 1.0.0
 speakeasyVersion: latest
 sources:
-    my-source:
+    debug:
         inputs:
-            - location: https://api.unified.to/openapi.json
+            - location: .speakeasy/openapi.yaml
         registry:
-            location: registry.speakeasyapi.dev/unified/unified/my-source
+            location: registry.speakeasyapi.dev/speakeasy-team/speakeasy-team/debug
 targets:
     java-target:
         target: java
-        source: my-source
-        publish:
-            java:
-                ossrhUsername: $ossrh_username
-                ossrhPassword: $ossrh_password
-                gpgSecretKey: $java_gpg_secret_key
-                gpgPassPhrase: $java_gpg_passphrase
-        codeSamples:
-            registry:
-                location: registry.speakeasyapi.dev/unified/unified/my-source-java-code-samples
-            blocking: false
+        source: debug
